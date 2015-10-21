@@ -1,9 +1,18 @@
 # Minimal benötigte CMake-Version wenn z.B. bestimmte CMake-Kommandos benutzt werden
 cmake_minimum_required(VERSION 2.6)
+cmake_policy(SET CMP0020 NEW)
+cmake_policy(SET CMP0009 NEW)
 
-  #------------------------------------------------------------------------------
-  # Required CPM Setup - no need to modify - See: https://github.com/iauns/cpm
-  #------------------------------------------------------------------------------
+set(USE_DEEPLOCALIZER false)
+
+set(CPM_MODULE_NAME groundtruthConvert)
+set(CPM_LIB_TARGET_NAME ${CPM_MODULE_NAME})
+
+if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_TARGET_NAME))
+  set(CPM_LIB_TARGET_NAME ${CPM_TARGET_NAME})
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CPM_DIR})
+  include(CPM)
+else()
   set(CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm-packages" CACHE TYPE STRING)
   find_package(Git)
   if(NOT GIT_FOUND)
@@ -20,6 +29,7 @@ cmake_minimum_required(VERSION 2.6)
     endif()
   endif()
   include(${CPM_DIR}/CPM.cmake)
+endif()
   
   #------------------------------------------------------------------------------
   # CPM Modules
@@ -35,15 +45,15 @@ cmake_minimum_required(VERSION 2.6)
   	GIT_REPOSITORY "https://github.com/BioroboticsLab/biotracker_core.git"
   		GIT_TAG "master")
   
-
-  CPM_Finish()
+CPM_InitModule(${CPM_MODULE_NAME})
+  #CPM_Finish()
 
 # Der Projektname
 project(groundtruthConvert)
+find_package(OpenCV REQUIRED)
+find_package(Threads REQUIRED)
+find_package( Boost 1.54.0 REQUIRED thread system filesystem serialization program_options)
 
-# project dependecies
-#find_package(Threads REQUIRED)
-#find_package( Boost 1.54.0 REQUIRED thread system filesystem serialization program_options)
 
 #CFLAGS:=-Os -Wall -MMD -fno-asynchronous-unwind-tables -fdata-sections -ffunction-sections -fno-math-errno -fno-signed-zeros -fno-tree-vectorize -fomit-frame-pointer
 #CFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_REENTRANT
