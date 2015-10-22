@@ -14,18 +14,18 @@ formats of the biorobotics lab.
 * 	Requires alls dependencies of biorobotics_core and pipeline
 *	Requires boost program_options and opencv
 
-* 	use: 
-	cmake .
-	make
+* 	use:   
+	cmake .  
+	make  
 	to build the library.
 
-* 	use:
-	cmake cmake -DBUILD_CLI=1 .
-	make
+* 	use:  
+	cmake cmake -DBUILD_CLI=1 .  
+	make  
 	to build the command line tool.
 
-* 	For groundtruthConvertCLI, try 
-	groundtruthConvertCLI --help
+* 	For groundtruthConvertCLI, try   
+	groundtruthConvertCLI --help  
 	to see the help text for conversion details.
 
 ## Todo
