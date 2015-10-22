@@ -11,7 +11,8 @@ srv_gen
 external
 html
 latex
-src/groundtruthConvert
+groundtruthConvert/libgroundtruthConvert.so
+groundtruthConvert/groundtruthConvertCLI
 
 #Verzeichnisse zum abladen lokaler Testdaten kann:
 ignore

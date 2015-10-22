@@ -50,9 +50,6 @@ CPM_InitModule(${CPM_MODULE_NAME})
 
 # Der Projektname
 project(groundtruthConvert)
-find_package(OpenCV REQUIRED)
-find_package(Threads REQUIRED)
-find_package( Boost 1.54.0 REQUIRED thread system filesystem serialization program_options)
 
 
 #CFLAGS:=-Os -Wall -MMD -fno-asynchronous-unwind-tables -fdata-sections -ffunction-sections -fno-math-errno -fno-signed-zeros -fno-tree-vectorize -fomit-frame-pointer
@@ -147,7 +144,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 	endif()
 endif()
 
-add_subdirectory(src)
+add_subdirectory(groundtruthConvert)
 
 
 
