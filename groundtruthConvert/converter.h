@@ -47,7 +47,7 @@ public:
 	 * \param file Path to tdat file
 	 * \return Content in csv format (string)
 	 */
-	std::string TDatToCSV(std::string file);
+	std::string TDatToCSV(std::string file, bool appendGridpoints);
 };
 }
 

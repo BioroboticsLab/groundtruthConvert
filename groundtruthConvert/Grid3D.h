@@ -117,6 +117,8 @@ public:
 	}
 
 	std::vector<cv::Point> const& getOuterRingPoints() const { return _coordinates2D[OUTER_RING]; }
+	std::vector<cv::Point> const& getMiddleRingPoints() const { return _coordinates2D[MIDDLE_RING]; }
+	std::vector<cv::Point> const& getInnerRingPoints() const { return _coordinates2D[INNER_RING]; }
 
 private:
 	/******************************************

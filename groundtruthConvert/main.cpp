@@ -159,7 +159,7 @@ int main(int argc, char **argv){
 	//Run file conversion
 	else if(vm.count("convert")){
 		if(cmpNoCase(intype,"tdat") && cmpNoCase(outtype,"csv")){
-			std::string csv = w.TDatToCSV(infile);
+			std::string csv = w.TDatToCSV(infile,false);
 			std::ofstream ostream(outfile.c_str(), std::ofstream::binary);
 			ostream.write (csv.c_str(),csv.size());
 			ostream.close();
