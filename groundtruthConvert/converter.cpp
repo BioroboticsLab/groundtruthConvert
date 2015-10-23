@@ -39,7 +39,7 @@ std::string fmt(const std::shared_ptr<Grid3D> grid3d, int index){
 
 
 	const std::array<boost::logic::tribool, 12ul> arr = grid3d->getIdArray();
-	for (unsigned int i=0; i<12; i++) ss << arr[i];
+	for (int i=11; i>=0; i--) ss << arr[i];
 
 	return ss.str();
 }
