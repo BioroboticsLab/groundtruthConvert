@@ -43,7 +43,13 @@ std::string fmt(const std::shared_ptr<Grid3D> grid3d, int index){
 
 	return ss.str();
 }
-
+void printCSVHeader(std::stringstream & ss, bool appendGridpoints=false) {
+    ss << "idx, X, X, cx, cy, rot_x, rot_y, rot_z, radius, id";
+    if(appendGridpoints) {
+        ss << ", outer_ring_points ... , middle_ring_points ... , inner_ring_points ...";
+    }
+	ss << '\n';
+}
 void gtConverter::gtWorker::printTDatFile(std::string file){
 	Serialization::Data data;
 	{
@@ -56,19 +62,17 @@ void gtConverter::gtWorker::printTDatFile(std::string file){
 
 	int idx = 0;
 	GroundTruthEvaluation::ResultsByFrame resultsByFrame;
-	for (TrackedObject const& object : data.getTrackedObjects()) {
+	std::stringstream ss;
+	printCSVHeader(ss);	for (TrackedObject const& object : data.getTrackedObjects()) {
 		for (size_t frameNumber = 0; frameNumber <= object.getLastFrameNumber(); ++frameNumber) {
-			std::vector<GroundTruthGridSPtr>& results = resultsByFrame[frameNumber];
-
 			const std::shared_ptr<Grid3D> grid3d = object.maybeGet<Grid3D>(frameNumber);
 
 			if (!grid3d) continue;
-			std::string ss = fmt(grid3d,idx++);
-			std::cout << ss<<std::endl;
+			ss << fmt(grid3d,idx++) << '\n';
 
 		}
 	}
-
+	std::cout << ss.str() << std::endl;
 }
 
 
@@ -85,18 +89,15 @@ std::string gtConverter::gtWorker::TDatToCSV(std::string file, bool appendGridpo
 	std::stringstream ss;
 
 	int idx = 0;
+	printCSVHeader(ss, appendGridpoints);
 	GroundTruthEvaluation::ResultsByFrame resultsByFrame;
 	for (TrackedObject const& object : data.getTrackedObjects()) {
 		for (size_t frameNumber = 0; frameNumber <= object.getLastFrameNumber(); ++frameNumber) {
-			std::vector<GroundTruthGridSPtr>& results = resultsByFrame[frameNumber];
-
 			const std::shared_ptr<Grid3D> grid3d = object.maybeGet<Grid3D>(frameNumber);
-
 			if (!grid3d) continue;
 			std::string r = fmt(grid3d,idx++);
 			ss << r;
 			if(appendGridpoints){
-
 				std::vector<cv::Point> ptso = grid3d->getOuterRingPoints();
 				std::vector<cv::Point> ptsm = grid3d->getMiddleRingPoints();
 				std::vector<cv::Point> ptsi = grid3d->getInnerRingPoints();
@@ -107,7 +108,7 @@ std::string gtConverter::gtWorker::TDatToCSV(std::string file, bool appendGridpo
 				ss<<",I";
 				for(unsigned int i=0; i<ptsi.size(); i++) ss << "," << ptsi[i].x << ","<<ptsi[i].y;
 			}
-			ss << std::endl;
+			ss << '\n';
 		}
 	}
 	return ss.str();
