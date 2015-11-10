@@ -68,6 +68,7 @@ void gtConverter::gtWorker::printTDatFile(std::string file){
 			const std::shared_ptr<Grid3D> grid3d = object.maybeGet<Grid3D>(frameNumber);
 
 			if (!grid3d) continue;
+			if (!grid3d->hasBeenBitToggled()) continue;
 			ss << fmt(grid3d,idx++) << '\n';
 
 		}
@@ -95,6 +96,7 @@ std::string gtConverter::gtWorker::TDatToCSV(std::string file, bool appendGridpo
 		for (size_t frameNumber = 0; frameNumber <= object.getLastFrameNumber(); ++frameNumber) {
 			const std::shared_ptr<Grid3D> grid3d = object.maybeGet<Grid3D>(frameNumber);
 			if (!grid3d) continue;
+			if (!grid3d->hasBeenBitToggled()) continue;
 			std::string r = fmt(grid3d,idx++);
 			ss << r;
 			if(appendGridpoints){
