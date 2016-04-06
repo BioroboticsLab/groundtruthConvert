@@ -13,6 +13,9 @@
 #include <iostream>
 #include <vector>
 
+#include <biotracker/serialization/SerializationData.h>
+#include <pipeline/util/GroundTruthEvaluator.h>
+
 namespace gtConverter {
 
 /*! \class gtWorker gtWorker.h “gtWorker.h”
@@ -30,11 +33,7 @@ namespace gtConverter {
  *
  */
 class  gtWorker {
-
-  private:
-
   public:
-
     /*! \brief Prints a tdat file as csv using std::cout
      *
      * \param file Path to tdat file
@@ -49,6 +48,9 @@ class  gtWorker {
      */
     std::string TDatToCSV(std::string file, bool appendGridpoints);
 };
+
+GroundTruthEvaluation::ResultsByFrame ResultsFromSerializationData(
+        BioTracker::Core::Serialization::Data const& data);
 }
 
 

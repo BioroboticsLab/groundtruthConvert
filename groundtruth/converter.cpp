@@ -123,5 +123,35 @@ std::string gtConverter::gtWorker::TDatToCSV(std::string file, bool appendGridpo
     return ss.str();
 }
 
+GroundTruthEvaluation::ResultsByFrame gtConverter::ResultsFromSerializationData(
+        const BioTracker::Core::Serialization::Data &data) {
+    GroundTruthEvaluation::ResultsByFrame resultsByFrame;
+    for (BioTracker::Core::TrackedObject const& object : data.getTrackedObjects()) {
+        for (size_t frameNumber = 0; frameNumber <= object.getLastFrameNumber(); ++frameNumber) {
+            std::vector<GroundTruthGridSPtr>& results = resultsByFrame[frameNumber];
+
+            const std::shared_ptr<Grid3D> grid3d = object.maybeGet<Grid3D>(frameNumber);
+
+            if (!grid3d) continue;
+
+            // convert to PipelineGrid
+            const auto grid = std::make_shared<PipelineGrid>(
+                        grid3d->getCenter(), grid3d->getPixelRadius(),
+                        grid3d->getZRotation(), grid3d->getYRotation(),
+                        grid3d->getXRotation());
+            grid->setIdArray(grid3d->getIdArray());
+            grid->setSettable(grid3d->isSettable());
+            grid->setHasBeenSet(grid3d->hasBeenBitToggled() == boost::logic::tribool::true_value);
+
+            // insert in set
+            if (grid) {
+                results.push_back(grid);
+            }
+        }
+    }
+
+    return resultsByFrame;
+}
+
 
 
