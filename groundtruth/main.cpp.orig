@@ -1,13 +1,15 @@
-
 #include "converter.h"
+
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
 
-#include "boost/program_options.hpp"
+#include <boost/program_options.hpp>
+#include <boost/optional.hpp>
 
-
-boost::program_options::variables_map getQcCLIoptions(int argc, char **argv){
+typedef boost::optional<boost::program_options::variables_map> optional_vm;
+optional_vm getQcCLIoptions(int argc, char **argv) {
 	namespace po = boost::program_options;
 	namespace po_style = boost::program_options::command_line_style;
 
@@ -45,7 +47,7 @@ boost::program_options::variables_map getQcCLIoptions(int argc, char **argv){
 	}
 	if (vm.count("help") || argc<1) {
 		std::cout << desc << std::endl;
-		return 1;
+        return optional_vm();
 	}
 
 	return vm;
@@ -56,7 +58,7 @@ bool filetype(std::string str, std::string type){
 	std::transform(str.begin(), str.end(),str.begin(), ::toupper);
 	std::transform(type.begin(), type.end(),type.begin(), ::toupper);
 
-	int s = type.size();
+    size_t s = type.size();
 	if(str.size()<s) return false;
 
 	if(str.substr(str.size()-s)==type) return true;
@@ -73,7 +75,12 @@ bool cmpNoCase(std::string str, std::string str2){
 int main(int argc, char **argv){
 
 	gtConverter::gtWorker w;
-	boost::program_options::variables_map vm = getQcCLIoptions(argc,argv);
+    const optional_vm optionalVm = getQcCLIoptions(argc,argv);
+    if (!optionalVm) {
+        return EXIT_FAILURE;
+    }
+    const auto vm = optionalVm.get();
+
 	std::string infile,outfile,intype,outtype;
 
 	//Set and verify all parameters.
@@ -85,18 +92,18 @@ int main(int argc, char **argv){
 			if (!my_file.good())
 			{
 				std::cerr << "Error: Input file not readable." << std::endl;
-				exit(1);
+                return EXIT_FAILURE;
 			}
 		}else{
 			std::cerr << "Error: Please specify an input file." << std::endl;
-			exit(1);
+            return EXIT_FAILURE;
 		}
 
 		if (vm.count("intype")){
 			intype = vm["intype"].as<std::string>();
 			if(! cmpNoCase(intype,"tdat") && ! cmpNoCase(intype,"csv") ){
 				std::cerr << "Error: Input type not valid." << std::endl;
-				exit(1);
+                return EXIT_FAILURE;
 			}
 		}else if(filetype(infile,"csv")){
 			std::cout << "Notice:Assuming filetype csv for input." << std::endl;
@@ -108,8 +115,8 @@ int main(int argc, char **argv){
 
 		if(intype==""){
 			std::cerr << "Error: Please specify an input type." << std::endl;
-			exit(1);
-		}
+            return EXIT_FAILURE;
+        }
 	}
 
 	if(vm.count("convert")){
@@ -122,16 +129,16 @@ int main(int argc, char **argv){
 			}
 		}else{
 			std::cerr << "Error: Please specify an output file." << std::endl;
-			exit(1);
-		}
+            return EXIT_FAILURE;
+        }
 
 
 		if (vm.count("outtype")){
 			outtype = vm["outtype"].as<std::string>();
 			if(! cmpNoCase(outtype,"tdat") && ! cmpNoCase(outtype,"csv") ){
 				std::cerr << "Error: Output type not valid." << std::endl;
-				exit(1);
-			}
+                return EXIT_FAILURE;
+            }
 		}else if(filetype(outfile,"csv")){
 			std::cout << "Notice:Assuming filetype csv for output." << std::endl;
 			outtype = "csv";
@@ -142,8 +149,8 @@ int main(int argc, char **argv){
 
 		if(outtype==""){
 			std::cerr << "Error: Please specify an output type." << std::endl;
-			exit(1);
-		}
+            return EXIT_FAILURE;
+        }
 	}
 
 	//Run echo'ing of files
@@ -152,7 +159,7 @@ int main(int argc, char **argv){
 			w.printTDatFile(infile);
 		else if(cmpNoCase(intype,"csv") ){
 			//uhm, this is basically a cat command, but well... :)
-			std::copy(infile.begin(), infile.end(), std::ostream_iterator<char *>(std::cout, ""));
+            std::copy(infile.begin(), infile.end(), std::ostream_iterator<char>(std::cout, ""));
 		}
 	}
 
@@ -166,17 +173,17 @@ int main(int argc, char **argv){
 		}else
 		{
 			std::cout << "Sorry, the specified conversion from "<<intype << " to " << outtype << " is not implemented yet." << std::endl;
-			exit(1);
-		}
+            return EXIT_FAILURE;
+        }
 	}
 
 	//Nothing to run?
 	else{
 
 		std::cerr << "Error: No action specified. Exiting..." << std::endl;
-		exit(1);
-	}
-	return 0;
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
 }
 
 
