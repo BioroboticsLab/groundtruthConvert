@@ -46,7 +46,7 @@ else()
 endif()
 
 include_biotracker_core("master")
-include_pipeline("use-mxnet")
+include_pipeline("master")
   
 CPM_InitModule(${CPM_MODULE_NAME})
 
